@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 
 public enum UpdateType {
+    Swap,
     Move,
     Stay
 }
@@ -22,6 +23,7 @@ public class UpdateManager{
         ClearUpdates();
         foreach (Element element in field){
             if (element != null){
+                element.isUpdated = false;
                 UpdateType updateType = element.GetUpdateType(field);
                 updates[(int)updateType].Add(new int[]{element.x, element.y, element.z});
             }

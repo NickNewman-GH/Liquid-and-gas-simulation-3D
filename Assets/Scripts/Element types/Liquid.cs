@@ -14,8 +14,10 @@ public class Liquid : Element{
                     List<int[]> availableCells = GetAvailableCellsAroundY(field, bottomY);
                     if (availableCells.Count == 0)
                         availableCells = GetAvailableCellsAroundY(field, y);
-                        if (availableCells.Count == 0)
+                        if (availableCells.Count == 0){
+                            isUpdated = true;
                             return;
+                        }
                     field[x, y, z] = null;
                     int[] randomAvailableCoords = availableCells[Random.Range(0, availableCells.Count)];
                     x = randomAvailableCoords[0]; y = randomAvailableCoords[1]; z = randomAvailableCoords[2];
@@ -26,15 +28,18 @@ public class Liquid : Element{
                 }
             } else{
                 List<int[]> availableCells = GetAvailableCellsAroundY(field, y);
-                if (availableCells.Count == 0)
+                if (availableCells.Count == 0){
+                    isUpdated = true;
                     return;
+                }
                 field[x, y, z] = null;
                 int[] randomAvailableCoords = availableCells[Random.Range(0, availableCells.Count)];
                 x = randomAvailableCoords[0]; y = randomAvailableCoords[1]; z = randomAvailableCoords[2];
             }
             field[x,y,z] = this;
             elementModel.transform.position = new Vector3(x,y,z);
-        } else {}
+        }
+        isUpdated = true;
     }
 
     public override UpdateType GetUpdateType(Element[,,] field){

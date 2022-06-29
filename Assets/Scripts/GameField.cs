@@ -21,6 +21,10 @@ public class GameField : MonoBehaviour{
 
     public int creatingElementTypeNumber = 0;
 
+    public bool isPaused = false;
+
+    public int creationFieldSize = 0;
+
     private void Awake() {
         fieldHighlighting.transform.localScale = new Vector3(field.GetLength(0), field.GetLength(1), field.GetLength(2));
         Instantiate(fieldHighlighting, new Vector3(field.GetLength(0)/2, field.GetLength(1)/2, field.GetLength(2)/2), Quaternion.Euler(0,0,0));
@@ -33,23 +37,45 @@ public class GameField : MonoBehaviour{
 
     private void Update(){
         CreateElements();
+        DeleteElements();
         ChangeCreatingElement();
+        Pause();
+        ChangeCreationFieldSize();
+
+        // if (!isPaused)
+        //     FieldUpdate();
+
         //Debug.Log("Apx FPS: " + 1.0f / Time.deltaTime);
     }
 
     private void FixedUpdate(){
-
-        FieldUpdate();    
-        
+        if (!isPaused)
+            FieldUpdate();
     }
 
     private void FieldUpdate(){
         updateManager.GetUpdates(field);
         for (int updateTypeNumber = 0; updateTypeNumber < updateManager.updates.Length; updateTypeNumber++){
             foreach (int[] updateCoords in updateManager.updates[updateTypeNumber]){
-                field[updateCoords[0], updateCoords[1], updateCoords[2]].Update(field, (UpdateType)updateTypeNumber);
+                if (!field[updateCoords[0], updateCoords[1], updateCoords[2]].isUpdated)
+                    field[updateCoords[0], updateCoords[1], updateCoords[2]].Update(field, (UpdateType)updateTypeNumber);
             }
         }
+    }
+
+    private void ChangeCreationFieldSize(){
+        var mouseWheelAxis = Input.GetAxis("Mouse ScrollWheel");
+        if (mouseWheelAxis > 0 && creationFieldSize < 6)
+            creationFieldSize++;
+        else if (mouseWheelAxis < 0 && creationFieldSize > 0)
+            creationFieldSize--;
+    }
+
+    private void Pause(){
+        if (Input.GetKeyDown(KeyCode.P))
+            isPaused = !isPaused;
+        if (isPaused && Input.GetKeyDown(KeyCode.RightArrow))
+            FieldUpdate();
     }
 
     private void ChangeCreatingElement(){
@@ -80,14 +106,12 @@ public class GameField : MonoBehaviour{
     }
 
     private void CreateElements(){
-        if (Input.GetKey(KeyCode.Space)){
+        if (Input.GetKey(KeyCode.Mouse0)){
             var cameraPosition = transform.position;
-            
             int cameraX = (int)cameraPosition[0], cameraY = (int)cameraPosition[1], cameraZ = (int)cameraPosition[2];
-            
-            for (int xPos = cameraX - 1; xPos < cameraX + 2; xPos++){
-                for (int yPos = cameraY - 1; yPos < cameraY + 2; yPos++){
-                    for (int zPos = cameraZ - 1; zPos < cameraZ + 2; zPos++){
+            for (int xPos = cameraX - creationFieldSize; xPos < cameraX + (creationFieldSize + 1); xPos++){
+                for (int yPos = cameraY - creationFieldSize; yPos < cameraY + (creationFieldSize + 1); yPos++){
+                    for (int zPos = cameraZ - creationFieldSize; zPos < cameraZ + (creationFieldSize + 1); zPos++){
                         if (checkCoordsRelevance(xPos, yPos, zPos) && field[xPos, yPos, zPos] == null){
                             switch (creatingElementTypeNumber){
                                 case 0:
@@ -107,18 +131,23 @@ public class GameField : MonoBehaviour{
                     }
                 }
             }
+        }
+    }
 
-
-            // if ((cameraX >= 0 && cameraX < field.GetLength(0)) &&
-            //     (cameraY >= 0 && cameraY < field.GetLength(1)) && 
-            //     (cameraZ >= 0 && cameraZ < field.GetLength(2))){
-            //     if (field[cameraX, cameraY, cameraZ] == null){
-            //         if (creatingElementTypeNumber == 0)
-            //             field[cameraX, cameraY, cameraZ] = new Sand(cameraX, cameraY, cameraZ, Instantiate(elementModel, new Vector3(cameraX, cameraY, cameraZ), Quaternion.Euler(0,0,0)));
-            //         else if (creatingElementTypeNumber == 1)
-            //             field[cameraX, cameraY, cameraZ] = new Water(cameraX, cameraY, cameraZ, Instantiate(elementModel, new Vector3(cameraX, cameraY, cameraZ), Quaternion.Euler(0,0,0)));
-            //     }
-            // }
+    private void DeleteElements(){
+        if (Input.GetKey(KeyCode.Mouse1)){
+            var cameraPosition = transform.position;
+            int cameraX = (int)cameraPosition[0], cameraY = (int)cameraPosition[1], cameraZ = (int)cameraPosition[2];
+            for (int xPos = cameraX - creationFieldSize; xPos < cameraX + (creationFieldSize + 1); xPos++){
+                for (int yPos = cameraY - creationFieldSize; yPos < cameraY + (creationFieldSize + 1); yPos++){
+                    for (int zPos = cameraZ - creationFieldSize; zPos < cameraZ + (creationFieldSize + 1); zPos++){
+                        if (checkCoordsRelevance(xPos, yPos, zPos) && field[xPos, yPos, zPos] != null){
+                            Destroy(field[xPos, yPos, zPos].elementModel);
+                            field[xPos, yPos, zPos] = null;
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -331,6 +331,9 @@ MonoBehaviour:
   - {fileID: 2100000, guid: d0ad9734a17bb2d41abda68a36ecd6d3, type: 2}
   - {fileID: 2100000, guid: b78422c496f911f47883e52868e9caed, type: 2}
   - {fileID: 2100000, guid: b5f9e4134dc35054e805a02d4347fe5a, type: 2}
+  - {fileID: 2100000, guid: 3921f7052556cc84287bd43127c5e179, type: 2}
   elementModel: {fileID: 1300222013188652061, guid: 84aab99741ece8c4988c340056071fab, type: 3}
   fieldHighlighting: {fileID: 1210715472817711523, guid: 4ec2b724d164de14584e483fff359951, type: 3}
   creatingElementTypeNumber: 0
+  isPaused: 0
+  creationFieldSize: 0

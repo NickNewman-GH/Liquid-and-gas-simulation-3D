@@ -7,6 +7,8 @@ abstract public class Element{
     public int x, y, z;
     public GameObject elementModel;
     public int density;
+    public bool isUpdated = false;
+    public bool canBeMoved = true;
 
     public Element(int posX, int posY, int posZ, GameObject obj){
         elementModel = obj; x = posX; y = posY; z = posZ;
