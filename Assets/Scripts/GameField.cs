@@ -65,6 +65,10 @@ public class GameField : MonoBehaviour{
             creatingElementTypeNumber = 2;
             elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
         }
+        else if (Input.GetKey(KeyCode.Alpha4)){
+            creatingElementTypeNumber = 3;
+            elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+        }
     }
 
     public bool checkCoordsRelevance(int xPos, int yPos, int zPos){
@@ -85,12 +89,20 @@ public class GameField : MonoBehaviour{
                 for (int yPos = cameraY - 1; yPos < cameraY + 2; yPos++){
                     for (int zPos = cameraZ - 1; zPos < cameraZ + 2; zPos++){
                         if (checkCoordsRelevance(xPos, yPos, zPos) && field[xPos, yPos, zPos] == null){
-                            if (creatingElementTypeNumber == 0)
-                                field[xPos, yPos, zPos] = new Sand(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
-                            else if (creatingElementTypeNumber == 1)
-                                field[xPos, yPos, zPos] = new Water(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
-                            else if (creatingElementTypeNumber == 2)
-                                field[xPos, yPos, zPos] = new Smoke(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
+                            switch (creatingElementTypeNumber){
+                                case 0:
+                                    field[xPos, yPos, zPos] = new Sand(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
+                                    break;
+                                case 1:
+                                    field[xPos, yPos, zPos] = new Water(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
+                                    break;
+                                case 2:
+                                    field[xPos, yPos, zPos] = new Smoke(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
+                                    break;
+                                case 3:
+                                    field[xPos, yPos, zPos] = new Stone(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
+                                    break;
+                            }
                         }
                     }
                 }

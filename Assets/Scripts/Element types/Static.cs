@@ -2,17 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Static : MonoBehaviour
+public class Static : Element
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    public Static(int posX, int posY, int posZ, GameObject obj) : base(posX, posY, posZ, obj){}
+
+    public override void Update(Element[,,] field, UpdateType updateType){       
+        if (updateType == UpdateType.Move){
+        } else {}
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public override UpdateType GetUpdateType(Element[,,] field){
+        return UpdateType.Stay;
     }
 }
