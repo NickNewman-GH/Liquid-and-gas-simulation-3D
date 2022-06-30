@@ -41,6 +41,7 @@ public class GameField : MonoBehaviour{
         ChangeCreatingElement();
         Pause();
         ChangeCreationFieldSize();
+        ClearField();
 
         // if (!isPaused)
         //     FieldUpdate();
@@ -56,7 +57,8 @@ public class GameField : MonoBehaviour{
     private void FieldUpdate(){
         updateManager.GetUpdates(field);
         for (int updateTypeNumber = 0; updateTypeNumber < updateManager.updates.Length; updateTypeNumber++){
-            foreach (int[] updateCoords in updateManager.updates[updateTypeNumber]){
+            List<int[]> updateType = updateManager.updates[updateTypeNumber];
+            foreach (int[] updateCoords in updateType){
                 if (!field[updateCoords[0], updateCoords[1], updateCoords[2]].isUpdated)
                     field[updateCoords[0], updateCoords[1], updateCoords[2]].Update(field, (UpdateType)updateTypeNumber);
             }
@@ -95,6 +97,10 @@ public class GameField : MonoBehaviour{
             creatingElementTypeNumber = 3;
             elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
         }
+        else if (Input.GetKey(KeyCode.Alpha5)){
+            creatingElementTypeNumber = 4;
+            elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+        }
     }
 
     public bool checkCoordsRelevance(int xPos, int yPos, int zPos){
@@ -126,6 +132,9 @@ public class GameField : MonoBehaviour{
                                 case 3:
                                     field[xPos, yPos, zPos] = new Stone(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
                                     break;
+                                case 4:
+                                    field[xPos, yPos, zPos] = new Oil(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
+                                    break;
                             }
                         }
                     }
@@ -148,6 +157,16 @@ public class GameField : MonoBehaviour{
                     }
                 }
             }
+        }
+    }
+
+    public void ClearField(){
+        if (Input.GetKey(KeyCode.R)){
+            foreach (Element element in field)
+                if (element != null){
+                    Destroy(element.elementModel);
+                }
+            field = new Element[25, 25, 25];
         }
     }
 }

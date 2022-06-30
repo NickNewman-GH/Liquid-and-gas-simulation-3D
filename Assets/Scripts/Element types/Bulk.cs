@@ -74,7 +74,10 @@ public class Bulk : Element {
                     if (checkCoordsRelevance(field, xPos, yPos, zPos))
                         if (field[xPos, yPos, zPos] == null)
                             return UpdateType.Move;
-                        else if (field[xPos, yPos, zPos].canBeMoved && field[xPos, yPos, zPos].density < density)
+            for (int xPos = x - 1; xPos < x + 2; xPos++)
+                for (int zPos = z - 1; zPos < z + 2; zPos++)
+                    if (checkCoordsRelevance(field, xPos, yPos, zPos))
+                        if (field[xPos, yPos, zPos].canBeMoved && field[xPos, yPos, zPos].density < density)
                             return UpdateType.Swap;
             return UpdateType.Stay;
         } else {
