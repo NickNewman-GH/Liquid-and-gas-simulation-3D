@@ -130,15 +130,6 @@ public class Liquid : Element{
                             return UpdateType.Swap;
             return UpdateType.Stay;
         }
-
-
-        // int bottomY = y - 1;
-        // for (int xPos = x - 1; xPos < x + 2; xPos++)
-        //     for (int zPos = z - 1; zPos < z + 2; zPos++)
-        //         if ((checkCoordsRelevance(field, xPos, y, zPos) && (field[xPos, y, zPos] == null)) || 
-        //         (checkCoordsRelevance(field, xPos, bottomY, zPos) && (field[xPos, bottomY, zPos] == null)))
-        //             return UpdateType.Move;
-        // return UpdateType.Stay;
     }
 
     public List<int[]> GetAvailableCellsAroundY(Element[,,] field, int yPos){

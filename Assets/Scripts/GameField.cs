@@ -100,6 +100,9 @@ public class GameField : MonoBehaviour{
         else if (Input.GetKey(KeyCode.Alpha5)){
             creatingElementTypeNumber = 4;
             elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+        }else if (Input.GetKey(KeyCode.Alpha6)){
+            creatingElementTypeNumber = 5;
+            elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
         }
     }
 
@@ -134,6 +137,9 @@ public class GameField : MonoBehaviour{
                                     break;
                                 case 4:
                                     field[xPos, yPos, zPos] = new Oil(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
+                                    break;
+                                case 5:
+                                    field[xPos, yPos, zPos] = new Steam(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
                                     break;
                             }
                         }
