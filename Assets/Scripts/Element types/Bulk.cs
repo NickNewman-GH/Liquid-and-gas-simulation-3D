@@ -67,7 +67,7 @@ public class Bulk : Element {
             int yPos = y - 1;
             if (field[x, yPos, z] == null)
                 return UpdateType.Move;
-            else if (field[x, yPos, z].density < density)
+            else if (field[x, yPos, z].canBeMoved && field[x, yPos, z].density < density)
                 return UpdateType.Swap;
             for (int xPos = x - 1; xPos < x + 2; xPos++)
                 for (int zPos = z - 1; zPos < z + 2; zPos++)
