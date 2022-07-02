@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Smoke : Gas
 {
-    public Smoke(int posX, int posY, int posZ, GameObject obj) : base(posX, posY, posZ, obj){
+    public Smoke(int posX, int posY, int posZ, GameObject obj, Material material) : base(posX, posY, posZ, obj, material){
         density = 5;
     }
 }

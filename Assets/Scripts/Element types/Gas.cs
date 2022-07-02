@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Gas : Element{
 
-    public Gas(int posX, int posY, int posZ, GameObject obj) : base(posX, posY, posZ, obj){}
+    public Gas(int posX, int posY, int posZ, GameObject obj, Material material) : base(posX, posY, posZ, obj, material){}
     
     public override void Update(Element[,,] field, UpdateType updateType){       
         if (updateType == UpdateType.Move){
@@ -68,11 +68,25 @@ public class Gas : Element{
                 randomAvailableCoords = availableCells[Random.Range(0, availableCells.Count)];
                 SwapElements(field, randomAvailableCoords); 
             }
+        } else if (updateType == UpdateType.Replace){
+            if (temperatureBounds.ContainsKey(TemperatureBoundType.Upper) && temperature > temperatureBounds[TemperatureBoundType.Upper].boundTemperature){
+                int index = GetIndexOfElementType(temperatureBounds[TemperatureBoundType.Upper].elementToCreate);
+                ReplaceElement(field, index);
+                return;
+            } else if (temperatureBounds.ContainsKey(TemperatureBoundType.Lower) && temperature < temperatureBounds[TemperatureBoundType.Lower].boundTemperature){
+                int index = GetIndexOfElementType(temperatureBounds[TemperatureBoundType.Lower].elementToCreate);
+                ReplaceElement(field, index);
+                return;
+            }
         }
         isUpdated = true;
     }
 
     public override UpdateType GetUpdateType(Element[,,] field){
+        if (temperatureBounds.Count > 0)
+            if ((temperatureBounds.ContainsKey(TemperatureBoundType.Upper) && temperature > temperatureBounds[TemperatureBoundType.Upper].boundTemperature) || 
+            (temperatureBounds.ContainsKey(TemperatureBoundType.Lower) && temperature < temperatureBounds[TemperatureBoundType.Lower].boundTemperature))
+                return UpdateType.Replace;
         if (y < field.GetLength(1) - 1){
             int yPos = y + 1;
             if (field[x, yPos, z] == null)

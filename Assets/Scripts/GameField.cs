@@ -6,14 +6,17 @@ using System;
 public static class Globals{
     public static float gravity = 10f;
     public static double worldTemperature = 25;
+    public static Element[] elements;
 }
 
 public class GameField : MonoBehaviour{
     
     public Element[,,] field = new Element[25, 25, 25];
 
-    
     public Material[] elementMaterials;
+
+    public Element[] elements;
+
     public GameObject elementModel;
     [NonSerialized] public MeshRenderer elementModelMeshRenderer;
 
@@ -30,12 +33,27 @@ public class GameField : MonoBehaviour{
     public int tempChangeType = 0;
     public double tempChangePerSec = 250;
 
+    private void ElementsDeclaration(){
+        elements = new Element[]{
+            new Sand(-1, -1, -1, null, elementMaterials[0]),
+            new Water(-1, -1, -1, null, elementMaterials[1]),
+            new Smoke(-1, -1, -1, null, elementMaterials[2]),
+            new Stone(-1, -1, -1, null, elementMaterials[3]),
+            new Oil(-1, -1, -1, null, elementMaterials[4]),
+            new Steam(-1, -1, -1, null, elementMaterials[5]),
+            new Ice(-1, -1, -1, null, elementMaterials[6])
+        };
+    }
+
     private void Awake() {
+        ElementsDeclaration();
+        Globals.elements = elements;
+
         fieldHighlighting.transform.localScale = new Vector3(field.GetLength(0), field.GetLength(1), field.GetLength(2));
         Instantiate(fieldHighlighting, new Vector3(field.GetLength(0)/2, field.GetLength(1)/2, field.GetLength(2)/2), Quaternion.Euler(0,0,0));
 
         elementModelMeshRenderer = elementModel.GetComponent<MeshRenderer>();
-        elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+        elementModelMeshRenderer.material = elements[creatingElementTypeNumber].material;
 
         Time.fixedDeltaTime = 1 / 60f;
     }
@@ -90,43 +108,39 @@ public class GameField : MonoBehaviour{
 
     private void ChangeInputType(){
         if (Input.GetKey(KeyCode.LeftShift)){
-            if (Input.GetKey(KeyCode.Alpha1)){
-                Debug.Log("Minus");
-                tempChangeType = -1;
-            }
-            else if (Input.GetKey(KeyCode.Alpha2)){
-                Debug.Log("Plus");
+            if (Input.GetKeyDown(KeyCode.Alpha1))
                 tempChangeType = 1;
-            }
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+                tempChangeType = -1;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha1)){
-            creatingElementTypeNumber = 0;
-            elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+            creatingElementTypeNumber = GetIndexOfElementType(typeof(Sand));
+            elementModelMeshRenderer.material = elements[creatingElementTypeNumber].material;
             tempChangeType = 0;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2)){
-            creatingElementTypeNumber = 1;
-            elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+            creatingElementTypeNumber = GetIndexOfElementType(typeof(Water));
+            elementModelMeshRenderer.material = elements[creatingElementTypeNumber].material;
             tempChangeType = 0;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3)){
-            creatingElementTypeNumber = 2;
-            elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+            creatingElementTypeNumber = GetIndexOfElementType(typeof(Stone));
+            elementModelMeshRenderer.material = elements[creatingElementTypeNumber].material;
             tempChangeType = 0;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha4)){
-            creatingElementTypeNumber = 3;
-            elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+            creatingElementTypeNumber = GetIndexOfElementType(typeof(Oil));
+            elementModelMeshRenderer.material = elements[creatingElementTypeNumber].material;
             tempChangeType = 0;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha5)){
-            creatingElementTypeNumber = 4;
-            elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+            creatingElementTypeNumber = GetIndexOfElementType(typeof(Smoke));
+            elementModelMeshRenderer.material = elements[creatingElementTypeNumber].material;
             tempChangeType = 0;
         }
         else if (Input.GetKeyDown(KeyCode.Alpha6)){
-            creatingElementTypeNumber = 5;
-            elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+            creatingElementTypeNumber = GetIndexOfElementType(typeof(Steam));
+            elementModelMeshRenderer.material = elements[creatingElementTypeNumber].material;
             tempChangeType = 0;
         }
     }
@@ -147,26 +161,11 @@ public class GameField : MonoBehaviour{
                 for (int yPos = cameraY - creationFieldSize; yPos < cameraY + (creationFieldSize + 1); yPos++){
                     for (int zPos = cameraZ - creationFieldSize; zPos < cameraZ + (creationFieldSize + 1); zPos++){
                         if (checkCoordsRelevance(xPos, yPos, zPos) && field[xPos, yPos, zPos] == null){
-                            switch (creatingElementTypeNumber){
-                                case 0:
-                                    field[xPos, yPos, zPos] = new Sand(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
-                                    break;
-                                case 1:
-                                    field[xPos, yPos, zPos] = new Water(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
-                                    break;
-                                case 2:
-                                    field[xPos, yPos, zPos] = new Smoke(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
-                                    break;
-                                case 3:
-                                    field[xPos, yPos, zPos] = new Stone(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
-                                    break;
-                                case 4:
-                                    field[xPos, yPos, zPos] = new Oil(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
-                                    break;
-                                case 5:
-                                    field[xPos, yPos, zPos] = new Steam(xPos, yPos, zPos, Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0)));
-                                    break;
-                            }
+                            Element tmpElement = (Element)elements[creatingElementTypeNumber].Clone();
+                            tmpElement.x = xPos; tmpElement.y = yPos; tmpElement.z = zPos;
+                            tmpElement.elementModel = Instantiate(elementModel, new Vector3(xPos, yPos, zPos), Quaternion.Euler(0,0,0));
+                            tmpElement.elementModelMeshRenderer = tmpElement.elementModel.GetComponent<MeshRenderer>();
+                            field[xPos, yPos, zPos] = tmpElement;
                         }
                     }
                 }
@@ -224,5 +223,12 @@ public class GameField : MonoBehaviour{
         foreach (Element element in field)
             if (element != null)
                 element.AroundTemperatureTransmission(field);
+    }
+
+    public int GetIndexOfElementType(Type type){
+        for (int i = 0; i < Globals.elements.Length; i++)
+            if (object.ReferenceEquals(Globals.elements[i].GetType(), type))
+                return i;
+        return -1;
     }
 }

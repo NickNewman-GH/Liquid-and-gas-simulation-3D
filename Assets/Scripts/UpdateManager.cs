@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 
 public enum UpdateType {
+    Replace,
     Swap,
     Move,
     Stay
@@ -26,7 +27,7 @@ public class UpdateManager{
                 element.isUpdated = false;
                 UpdateType updateType = element.GetUpdateType(field);
                 updates[(int)updateType].Add(new int[]{element.x, element.y, element.z});
-                Debug.Log(element.temperature);
+                //Debug.Log(element.temperature);
             }
         }
         ShuffleUpdates();

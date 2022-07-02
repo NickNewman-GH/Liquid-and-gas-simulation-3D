@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Bulk : Element {
     
-    public Bulk(int posX, int posY, int posZ, GameObject obj) : base(posX, posY, posZ, obj){}
+    public Bulk(int posX, int posY, int posZ, GameObject obj, Material material) : base(posX, posY, posZ, obj, material){}
 
     public override void Update(Element[,,] field, UpdateType updateType){       
         if (updateType == UpdateType.Move){
@@ -58,11 +58,25 @@ public class Bulk : Element {
                 field[tmpX, tmpY, tmpZ] = targetElement; field[randomAvailableCoords[0], randomAvailableCoords[1], randomAvailableCoords[2]] = this;
                 field[tmpX, tmpY, tmpZ].isUpdated = true;
             }
+        } else if (updateType == UpdateType.Replace){
+            if (temperatureBounds.ContainsKey(TemperatureBoundType.Upper) && temperature > temperatureBounds[TemperatureBoundType.Upper].boundTemperature){
+                int index = GetIndexOfElementType(temperatureBounds[TemperatureBoundType.Upper].elementToCreate);
+                ReplaceElement(field, index);
+                return;
+            } else if (temperatureBounds.ContainsKey(TemperatureBoundType.Lower) && temperature < temperatureBounds[TemperatureBoundType.Lower].boundTemperature){
+                int index = GetIndexOfElementType(temperatureBounds[TemperatureBoundType.Lower].elementToCreate);
+                ReplaceElement(field, index);
+                return;
+            }
         }
         isUpdated = true;
     }
 
     public override UpdateType GetUpdateType(Element[,,] field){
+        if (temperatureBounds.Count > 0)
+            if ((temperatureBounds.ContainsKey(TemperatureBoundType.Upper) && temperature > temperatureBounds[TemperatureBoundType.Upper].boundTemperature) || 
+            (temperatureBounds.ContainsKey(TemperatureBoundType.Lower) && temperature < temperatureBounds[TemperatureBoundType.Lower].boundTemperature))
+                return UpdateType.Replace;
         if (y > 0){
             int yPos = y - 1;
             if (field[x, yPos, z] == null)
