@@ -5,12 +5,14 @@ using System;
 
 public static class Globals{
     public static float gravity = 10f;
+    public static double worldTemperature = 25;
 }
 
 public class GameField : MonoBehaviour{
     
     public Element[,,] field = new Element[25, 25, 25];
 
+    
     public Material[] elementMaterials;
     public GameObject elementModel;
     [NonSerialized] public MeshRenderer elementModelMeshRenderer;
@@ -25,6 +27,9 @@ public class GameField : MonoBehaviour{
 
     public int creationFieldSize = 0;
 
+    public int tempChangeType = 0;
+    public double tempChangePerSec = 250;
+
     private void Awake() {
         fieldHighlighting.transform.localScale = new Vector3(field.GetLength(0), field.GetLength(1), field.GetLength(2));
         Instantiate(fieldHighlighting, new Vector3(field.GetLength(0)/2, field.GetLength(1)/2, field.GetLength(2)/2), Quaternion.Euler(0,0,0));
@@ -36,9 +41,11 @@ public class GameField : MonoBehaviour{
     }
 
     private void Update(){
-        CreateElements();
+        if (tempChangeType == 0)
+            CreateElements();
+        else ChangeTemperature();
         DeleteElements();
-        ChangeCreatingElement();
+        ChangeInputType();
         Pause();
         ChangeCreationFieldSize();
         ClearField();
@@ -55,6 +62,7 @@ public class GameField : MonoBehaviour{
     }
 
     private void FieldUpdate(){
+        TemperatureTransmission();
         updateManager.GetUpdates(field);
         for (int updateTypeNumber = 0; updateTypeNumber < updateManager.updates.Length; updateTypeNumber++){
             List<int[]> updateType = updateManager.updates[updateTypeNumber];
@@ -80,29 +88,46 @@ public class GameField : MonoBehaviour{
             FieldUpdate();
     }
 
-    private void ChangeCreatingElement(){
-        if (Input.GetKey(KeyCode.Alpha1)){
+    private void ChangeInputType(){
+        if (Input.GetKey(KeyCode.LeftShift)){
+            if (Input.GetKey(KeyCode.Alpha1)){
+                Debug.Log("Minus");
+                tempChangeType = -1;
+            }
+            else if (Input.GetKey(KeyCode.Alpha2)){
+                Debug.Log("Plus");
+                tempChangeType = 1;
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha1)){
             creatingElementTypeNumber = 0;
             elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+            tempChangeType = 0;
         }
-        else if (Input.GetKey(KeyCode.Alpha2)){
+        else if (Input.GetKeyDown(KeyCode.Alpha2)){
             creatingElementTypeNumber = 1;
             elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+            tempChangeType = 0;
         }
-        else if (Input.GetKey(KeyCode.Alpha3)){
+        else if (Input.GetKeyDown(KeyCode.Alpha3)){
             creatingElementTypeNumber = 2;
             elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+            tempChangeType = 0;
         }
-        else if (Input.GetKey(KeyCode.Alpha4)){
+        else if (Input.GetKeyDown(KeyCode.Alpha4)){
             creatingElementTypeNumber = 3;
             elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+            tempChangeType = 0;
         }
-        else if (Input.GetKey(KeyCode.Alpha5)){
+        else if (Input.GetKeyDown(KeyCode.Alpha5)){
             creatingElementTypeNumber = 4;
             elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
-        }else if (Input.GetKey(KeyCode.Alpha6)){
+            tempChangeType = 0;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha6)){
             creatingElementTypeNumber = 5;
             elementModelMeshRenderer.material = elementMaterials[creatingElementTypeNumber];
+            tempChangeType = 0;
         }
     }
 
@@ -166,6 +191,25 @@ public class GameField : MonoBehaviour{
         }
     }
 
+    public void ChangeTemperature(){
+        if (Input.GetKey(KeyCode.Mouse0)){
+            /////////
+            //Debug.Log(tempChangePerSec * Time.deltaTime * tempChangeType);
+            /////////
+            var cameraPosition = transform.position;
+            int cameraX = (int)cameraPosition[0], cameraY = (int)cameraPosition[1], cameraZ = (int)cameraPosition[2];
+            for (int xPos = cameraX - creationFieldSize; xPos < cameraX + (creationFieldSize + 1); xPos++){
+                for (int yPos = cameraY - creationFieldSize; yPos < cameraY + (creationFieldSize + 1); yPos++){
+                    for (int zPos = cameraZ - creationFieldSize; zPos < cameraZ + (creationFieldSize + 1); zPos++){
+                        if (checkCoordsRelevance(xPos, yPos, zPos) && field[xPos, yPos, zPos] != null){
+                            field[xPos, yPos, zPos].temperature += tempChangePerSec * Time.deltaTime * tempChangeType;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void ClearField(){
         if (Input.GetKey(KeyCode.R)){
             foreach (Element element in field)
@@ -174,5 +218,11 @@ public class GameField : MonoBehaviour{
                 }
             field = new Element[25, 25, 25];
         }
+    }
+
+    public void TemperatureTransmission(){
+        foreach (Element element in field)
+            if (element != null)
+                element.AroundTemperatureTransmission(field);
     }
 }

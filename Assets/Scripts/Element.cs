@@ -9,6 +9,7 @@ abstract public class Element{
     public int density;
     public bool isUpdated = false;
     public bool canBeMoved = true;
+    public double temperature = Globals.worldTemperature;
 
     public Element(int posX, int posY, int posZ, GameObject obj){
         elementModel = obj; x = posX; y = posY; z = posZ;
@@ -23,5 +24,9 @@ abstract public class Element{
             (zPos > -1 && zPos < field.GetLength(2)))
             return true;
         else return false;
+    }
+
+    public void AroundTemperatureTransmission(Element[,,] field){
+        
     }
 }
