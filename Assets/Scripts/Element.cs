@@ -7,7 +7,7 @@ abstract public class Element : ICloneable{
 
     public int x, y, z;
     public int density;
-    public double thermalConductivity = 999999;
+    public double thermalConductivity = 3;
     public GameObject elementModel;
     public MeshRenderer elementModelMeshRenderer;
     public Material material;
@@ -25,10 +25,10 @@ abstract public class Element : ICloneable{
     abstract public void Update(Element[,,] field, UpdateType updateType);
     abstract public UpdateType GetUpdateType(Element[,,] field);
 
-    public bool checkCoordsRelevance(Element[,,] field, int xPos, int yPos, int zPos){
-        if ((xPos > -1 && xPos < field.GetLength(0)) && 
-            (yPos > -1 && yPos < field.GetLength(1)) &&
-            (zPos > -1 && zPos < field.GetLength(2)))
+    public bool checkCoordsRelevance(int xPos, int yPos, int zPos){
+        if ((xPos > -1 && xPos < Globals.xSize) && 
+            (yPos > -1 && yPos < Globals.ySize) &&
+            (zPos > -1 && zPos < Globals.zSize))
             return true;
         else return false;
     }
@@ -38,17 +38,20 @@ abstract public class Element : ICloneable{
         for (int xPos = x - 1; xPos < x + 2; xPos++){
             for (int yPos = y - 1; yPos < y + 2; yPos++){
                 for (int zPos = z - 1; zPos < z + 2; zPos++){
-                    if (!(xPos == x && yPos == y && zPos == z) && checkCoordsRelevance(field, xPos, yPos, zPos)){
-                        if (field[xPos, yPos, zPos] == null)
+                    if (!(xPos == x && yPos == y && zPos == z) && checkCoordsRelevance(xPos, yPos, zPos)){
+                        Element tmpElem = field[xPos, yPos, zPos];
+                        if (tmpElem == null)
                             isContactWithOutside = true;
-                        else
-                            field[xPos, yPos, zPos].temperature = field[xPos, yPos, zPos].temperature + (temperature - field[xPos, yPos, zPos].temperature)/field[xPos, yPos, zPos].thermalConductivity * Time.fixedDeltaTime;
+                        else{
+                            double tmpTemp = tmpElem.temperature;
+                            field[xPos, yPos, zPos].temperature = tmpTemp + (temperature - tmpTemp)/tmpElem.thermalConductivity * Time.fixedDeltaTime;
+                        }
                     }
                 }
             }
         }
         if (isContactWithOutside)
-            temperature -= (temperature - Globals.worldTemperature)/thermalConductivity * Time.fixedDeltaTime;
+            temperature -= (temperature - Globals.worldTemperature)/thermalConductivity * Time.fixedDeltaTime * 0.25;
     }
 
     public object Clone(){

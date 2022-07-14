@@ -110,23 +110,23 @@ public class Liquid : Element{
 
             for (int xPos = x - 1; xPos < x + 2; xPos++)
                 for (int zPos = z - 1; zPos < z + 2; zPos++)
-                    if (checkCoordsRelevance(field, xPos, yPos, zPos))
+                    if (checkCoordsRelevance(xPos, yPos, zPos))
                         if (field[xPos, yPos, zPos] == null)
                             return UpdateType.Move;
             for (int xPos = x - 1; xPos < x + 2; xPos++)
                 for (int zPos = z - 1; zPos < z + 2; zPos++)
-                    if (checkCoordsRelevance(field, xPos, yPos, zPos))
+                    if (checkCoordsRelevance(xPos, yPos, zPos))
                         if (field[xPos, yPos, zPos].canBeMoved && field[xPos, yPos, zPos].density < density)
                             return UpdateType.Swap;
             
             for (int xPos = x - 1; xPos < x + 2; xPos++)
                 for (int zPos = z - 1; zPos < z + 2; zPos++)
-                    if (checkCoordsRelevance(field, xPos, y, zPos))
+                    if (checkCoordsRelevance(xPos, y, zPos))
                         if (field[xPos, y, zPos] == null)
                             return UpdateType.Move;
             for (int xPos = x - 1; xPos < x + 2; xPos++)
                 for (int zPos = z - 1; zPos < z + 2; zPos++)
-                    if (checkCoordsRelevance(field, xPos, y, zPos))
+                    if (checkCoordsRelevance(xPos, y, zPos))
                         if (field[xPos, y, zPos].canBeMoved && field[xPos, y, zPos].density < density)
                             return UpdateType.Swap;
 
@@ -134,12 +134,12 @@ public class Liquid : Element{
         } else {
             for (int xPos = x - 1; xPos < x + 2; xPos++)
                 for (int zPos = z - 1; zPos < z + 2; zPos++)
-                    if (checkCoordsRelevance(field, xPos, y, zPos))
+                    if (checkCoordsRelevance(xPos, y, zPos))
                         if (field[xPos, y, zPos] == null)
                             return UpdateType.Move;
             for (int xPos = x - 1; xPos < x + 2; xPos++)
                 for (int zPos = z - 1; zPos < z + 2; zPos++)
-                    if (checkCoordsRelevance(field, xPos, y, zPos))
+                    if (checkCoordsRelevance(xPos, y, zPos))
                         if (field[xPos, y, zPos].canBeMoved && field[xPos, y, zPos].density < density)
                             return UpdateType.Swap;
             return UpdateType.Stay;
@@ -151,7 +151,7 @@ public class Liquid : Element{
                 
         for (int xPos = x - 1; xPos < x + 2; xPos++)
             for (int zPos = z - 1; zPos < z + 2; zPos++)
-                if (!(xPos == x && zPos == z) && checkCoordsRelevance(field, xPos, yPos, zPos) && (field[xPos, yPos, zPos] == null))
+                if (!(xPos == x && zPos == z) && checkCoordsRelevance(xPos, yPos, zPos) && (field[xPos, yPos, zPos] == null))
                     availableCells.Add(new int[]{xPos, yPos, zPos});
         
         return availableCells;
@@ -161,7 +161,7 @@ public class Liquid : Element{
         List<int[]> availableCells = new List<int[]>();
         for (int xPos = x - 1; xPos < x + 2; xPos++)
             for (int zPos = z - 1; zPos < z + 2; zPos++)
-                if (!(xPos == x && zPos == z) && checkCoordsRelevance(field, xPos, yPos, zPos) && (field[xPos, yPos, zPos] != null) && field[xPos, yPos, zPos].canBeMoved && field[xPos, yPos, zPos].density < density)
+                if (!(xPos == x && zPos == z) && checkCoordsRelevance(xPos, yPos, zPos) && (field[xPos, yPos, zPos] != null) && field[xPos, yPos, zPos].canBeMoved && field[xPos, yPos, zPos].density < density)
                     availableCells.Add(new int[]{xPos, yPos, zPos});
         return availableCells;
     }

@@ -7,11 +7,12 @@ public static class Globals{
     public static float gravity = 10f;
     public static double worldTemperature = 25;
     public static Element[] elements;
+    public static int xSize = 25, ySize = 25, zSize = 25;
 }
 
 public class GameField : MonoBehaviour{
     
-    public Element[,,] field = new Element[25, 25, 25];
+    public Element[,,] field = new Element[Globals.xSize, Globals.ySize, Globals.zSize];
 
     public Material[] elementMaterials;
 
@@ -41,7 +42,9 @@ public class GameField : MonoBehaviour{
             new Stone(-1, -1, -1, null, elementMaterials[3]),
             new Oil(-1, -1, -1, null, elementMaterials[4]),
             new Steam(-1, -1, -1, null, elementMaterials[5]),
-            new Ice(-1, -1, -1, null, elementMaterials[6])
+            new Ice(-1, -1, -1, null, elementMaterials[6]),
+            new Lava(-1, -1, -1, null, elementMaterials[7]),
+            new SolidStone(-1, -1, -1, null, elementMaterials[3])
         };
     }
 
@@ -146,9 +149,9 @@ public class GameField : MonoBehaviour{
     }
 
     public bool checkCoordsRelevance(int xPos, int yPos, int zPos){
-        if ((xPos > -1 && xPos < field.GetLength(0)) && 
-            (yPos > -1 && yPos < field.GetLength(1)) &&
-            (zPos > -1 && zPos < field.GetLength(2)))
+        if ((xPos > -1 && xPos < Globals.xSize) && 
+            (yPos > -1 && yPos < Globals.ySize) &&
+            (zPos > -1 && zPos < Globals.zSize))
             return true;
         else return false;
     }
@@ -215,7 +218,7 @@ public class GameField : MonoBehaviour{
                 if (element != null){
                     Destroy(element.elementModel);
                 }
-            field = new Element[25, 25, 25];
+            field = new Element[Globals.xSize, Globals.ySize, Globals.zSize];
         }
     }
 
